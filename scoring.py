@@ -9,12 +9,13 @@ import json
 with open('config.json','r') as f:
     config = json.load(f) 
 
-model_path = os.path.join(config['output_model_path']) 
-test_data_path = os.path.join(config['test_data_path']) 
+model_path = os.path.join(config['output_model_path'])
+test_data_path = os.path.join(config['test_data_path'])
+output_data_path = os.path.join(config['output_folder_path'])
 
 
 # Function for model scoring
-def score_model():
+def score_model(data_path=output_data_path, data_file='testdata.csv'):
 
     #  load trained model
     model_dir = os.path.join(os.getcwd(), model_path)
@@ -22,7 +23,7 @@ def score_model():
 
     # load test data 
     testdata_dir = os.path.join(os.getcwd(), test_data_path)
-    testdata = pd.read_csv(os.path.join(testdata_dir, 'testdata.csv'))
+    testdata = pd.read_csv(os.path.join(data_path, data_file))
 
     X_test = testdata[['lastmonth_activity', 'lastyear_activity', 'number_of_employees']]
     y_test = testdata['exited']
@@ -33,6 +34,8 @@ def score_model():
 
     with open(os.path.join(model_path, 'latestscore.txt'), 'w') as txt_file:
         txt_file.write(str(f1score))
+
+    return f1score
 
 if __name__ == '__main__':
     score_model()

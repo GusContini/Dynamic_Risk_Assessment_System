@@ -7,26 +7,24 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import json
 import os
+import diagnostics
 
-
-
-###############Load config.json and get path variables
+# Load config.json and get path variables
 with open('config.json','r') as f:
     config = json.load(f) 
 
-dataset_csv_path = os.path.join(config['output_folder_path']) 
+prod_path = os.path.join(config['prod_deployment_path'])
+test_data_path = os.path.join(config['test_data_path'])
+output_path = os.path.join(config['output_model_path'])
 
-
-
-
-##############Function for reporting
+# Function for reporting
 def score_model():
-    #calculate a confusion matrix using the test data and the deployed model
-    #write the confusion matrix to the workspace
-
-
-
-
+    _, y = diagnostics.read_data(os.path.join(os.getcwd(), test_data_path), 'testdata.csv')
+    pred = diagnostics.model_predictions(os.path.join(os.getcwd(), test_data_path), 'testdata.csv')
+    disp = metrics.ConfusionMatrixDisplay(metrics.confusion_matrix(pred, y))
+    disp.plot()
+    fig = disp.figure_
+    fig.savefig(os.path.join(os.getcwd(), output_path, 'confusionmatrix.png'))
 
 if __name__ == '__main__':
     score_model()
